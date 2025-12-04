@@ -1,0 +1,41 @@
+<h2>L'événement touched n'est pas géré</h2>
+
+<p>Si on effectue un blur sur l'input interne du composant datepicker, l'événement "TouchedChangeEvent"
+    des FormControl n'est pas envoyé. C'est problématique si l'on souhaite afficher une erreur uniquement
+    si le champ a été touché par l'utilisateur.
+</p>
+<p>
+    Il faudrait appeler la callback fournie par ControlValueAccessor lors du blur sur l'input et lorsqu'on ferme la modale du datepicker.
+</p>
+
+<div>
+    <h5>Reproductibilité de l'erreur</h5>
+
+    <p>Cliquer dans le champ puis hors du champ : aucun événement envoyé.</p>
+
+    <dsfr-ext-datepicker [formControl]="control1"/>
+    <div>Liste des évènements :</div>
+    <code>
+        @for (evt of control1Evts; track $index) {
+            <div>{{ evt }}</div>
+        }
+    </code>
+</div>
+
+<div>
+    <h5>Workarround temporaire utilisé</h5>
+
+    <p>
+        Nous contournons actuellement cette lacune (cf. code source de DatepickerTouchComponent)<br/>
+        Refaire les mêmes actions : on constate l'envoi de l'événement.
+    </p>
+
+    <dsfr-button label="Mark as untouched" (click)="markAsUntouchedCtrl2()"/>
+    <dsfr-ext-datepicker [formControl]="control2" #datepicker2/>
+    <div>Liste des évènements :</div>
+    <code>
+        @for (evt of control2Evts; track $index) {
+            <div>{{ evt }}</div>
+        }
+    </code>
+</div>

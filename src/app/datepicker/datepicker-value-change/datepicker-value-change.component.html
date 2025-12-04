@@ -1,0 +1,85 @@
+<h2>Problèmes de changement de valeur et de validateurs</h2>
+
+
+<div>
+    <dsfr-accordions-group>
+        <dsfr-accordion heading="1 - Problème saisie premier caractère non autorisé par le masque">
+            <ul>
+                <li>Dans un champ vide, saisir la lettre 'a'</li>
+                <li>La lettre est effacée du champ (car ne correspond pas au masque : OK)</li>
+                <li>Mais la valeur du FormControl aura pour valeur 'a' (KO)</li>
+            </ul>
+
+            Résultat attendu : aucune valeur ne doit être émise afin que la saisie visuelle soit en adéquation avec le
+            modèle.
+        </dsfr-accordion>
+        <dsfr-accordion heading="2 - Saisie totale ou partielle et suppression avec la touche 'backspace'">
+            <ul>
+                <li>Dans un champ vide, saisir une date complète 01/01/2000</li>
+                <li>Puis essayer de la supprimer totalement à l'aide du clavier en utilisant la touche 'backspace'</li>
+                <li>On reste bloqué au premier / et on ne peut pas supprimer (KO)</li>
+            </ul>
+
+            Résultat attendu : pouvoir supprimer le champ entièrement à l'aide de la touche 'backspace'
+        </dsfr-accordion>
+        <dsfr-accordion heading="3 - Incohérence entre valeur partielle et statut du FormControl">
+            <ul>
+                <li>Dans un champ vide, saisir une date partielle 01/01</li>
+                <li>Sortir du champ</li>
+                <li>La valeur du FormControl est '01/01' (OK)</li>
+                <li>Le FormControl reste au statut valid (KO)</li>
+                <li>On pourrait donc valider un formulaire (FormGroup) avec une valeur invalide.</li>
+
+                Résultat attendu : Si au moins un caractère a été saisi dans le FormControl et que le parsing de la date
+                a échoué,
+                il devrait y avoir une erreur du type 'wrongFormat' et le statut du FormControl devrait être invalide.
+            </ul>
+
+            Résultat attendu : pouvoir supprimer le champ entièrement à l'aide de la touche 'backspace'
+        </dsfr-accordion>
+    </dsfr-accordions-group>
+    <dsfr-ext-datepicker [formControl]="control1"
+                         (dateChange)="onDateChangeCtrl1($event)"
+                         [severity]="control1.invalid ? 'error' : 'valid'"
+                         [message]="getErrorMessage(control1)"/>
+    <div>Control value : {{ control1.value ?? "null" }}</div>
+    <div>Control valid : {{ control1.valid }}</div>
+    <div>Liste des évènements :</div>
+    <code>
+        @for (evt of control1Evts; track $index) {
+            <div>{{ evt }}</div>
+        }
+    </code>
+</div>
+
+<div>
+    <dsfr-accordion heading="4 - Bug en cas d'utilisation de ValidatorFn externe">
+        <p>L'exemple suivant sert à démontrer que si on utilise une ValidatorFn sur le FormControl, elle finit par être
+            bypassée
+            par le Validator du datepicker.</p>
+        <p>On applique donc un validator qui renvoit tout le temps l'erreur 'alwaysInError' dans le cadre de cet
+            exemple</p>
+        <ul>
+            <li>Dans un champ vide, saisir une date partielle 01/01 (ou complète). On constate pendant la saisie la
+                présence de l'erreur 'alwaysInError'
+            </li>
+            <li>Sortir du champ (blur)</li>
+            <li>Le FormControl devient valide ce qui indique que la ValidatorFn a été bypassée. (KO)</li>
+        </ul>
+
+        Résultat attendu : Une ValidatorFn ajoutée dans le FormControl utilisé par le datepicker ne devrait pas être
+        ignorée.
+    </dsfr-accordion>
+    <dsfr-ext-datepicker [formControl]="control2"
+                         (dateChange)="onDateChangeCtrl2($event)"
+                         [severity]="control2.invalid ? 'error' : 'valid'"
+                         [message]="getErrorMessage(control2)"/>
+    <div>Control value : {{ control2.value ?? "null" }}</div>
+    <div>Control valid : {{ control2.valid }}</div>
+    <div>Liste des évènements :</div>
+    <code>
+        @for (evt of control2Evts; track $index) {
+            <div>{{ evt }}</div>
+        }
+    </code>
+</div>

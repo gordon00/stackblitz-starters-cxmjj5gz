@@ -1,1 +1,6 @@
 /* Add application styles & imports to this file! */
+code {
+    display: block;
+    height: 100px;
+    overflow: scroll;
+}
