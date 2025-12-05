@@ -5,37 +5,23 @@
     si le champ a été touché par l'utilisateur.
 </p>
 <p>
-    Il faudrait appeler la callback fournie par ControlValueAccessor lors du blur sur l'input et lorsqu'on ferme la modale du datepicker.
+    Il faudrait appeler la callback fournie par ControlValueAccessor lors du blur sur l'input et <b>lorsqu'on ferme la modale du datepicker</b>.
 </p>
 
-<div>
-    <h5>Reproductibilité de l'erreur</h5>
 
+<dsfr-accordion heading="Reproductibilité de l'erreur">
     <p>Cliquer dans le champ puis hors du champ : aucun événement envoyé.</p>
 
+    <div>touched={{control1.touched}}</div>
     <dsfr-ext-datepicker [formControl]="control1"/>
-    <div>Liste des évènements :</div>
-    <code>
-        @for (evt of control1Evts; track $index) {
-            <div>{{ evt }}</div>
-        }
-    </code>
-</div>
-
-<div>
-    <h5>Workarround temporaire utilisé</h5>
-
+</dsfr-accordion>
+<dsfr-accordion heading="Workarround temporaire utilisé">
     <p>
         Nous contournons actuellement cette lacune (cf. code source de DatepickerTouchComponent)<br/>
         Refaire les mêmes actions : on constate l'envoi de l'événement.
     </p>
 
-    <dsfr-button label="Mark as untouched" (click)="markAsUntouchedCtrl2()"/>
+    <dsfr-button label="Mark as untouched" (click)="markAsUntouchedCtrl2()" [disabled]="control2.untouched"/>
+    <div>touched={{control2.touched}}</div>
     <dsfr-ext-datepicker [formControl]="control2" #datepicker2/>
-    <div>Liste des évènements :</div>
-    <code>
-        @for (evt of control2Evts; track $index) {
-            <div>{{ evt }}</div>
-        }
-    </code>
-</div>
+</dsfr-accordion>
