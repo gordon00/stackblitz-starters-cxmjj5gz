@@ -55,31 +55,49 @@
 <div>
     <dsfr-accordion heading="4 - Bug en cas d'utilisation de ValidatorFn externe">
         <p>L'exemple suivant sert à démontrer que si on utilise une ValidatorFn sur le FormControl, elle finit par être
-            bypassée
-            par le Validator du datepicker.</p>
+            bypassée par le Validator du datepicker.</p>
         <p>On applique donc un validator qui renvoit tout le temps l'erreur 'alwaysInError' dans le cadre de cet
             exemple</p>
         <ul>
-            <li>Dans un champ vide, saisir une date partielle 01/01 (ou complète). On constate pendant la saisie la
+            <li>Dans le champ ci-dessous, saisir une date partielle 01/01 (ou complète). On constate pendant la saisie la
                 présence de l'erreur 'alwaysInError'
             </li>
             <li>Sortir du champ (blur)</li>
-            <li>Le FormControl devient valide ce qui indique que la ValidatorFn a été bypassée. (KO)</li>
+            <li>Le FormControl reste bien invalide (OK)</li>
+            <li>Mais les indicateurs visuels d'erreur disparaissent (KO)</li>
         </ul>
 
-        Résultat attendu : Une ValidatorFn ajoutée dans le FormControl utilisé par le datepicker ne devrait pas être
-        ignorée.
+        <p>Résultat attendu : Une ValidatorFn ajoutée dans le FormControl utilisé par le datepicker ne devrait pas être
+            invisibilisés.</p>
+
+        <p>Analyse : il n'est pas possible d'utiliser les &#64;Input  'severity' et 'message' car les valeurs sont surchargées
+        par la méthode DsfrDatepickerComponent.handleInternalValidation().
+        </p>
+
+        <p>Demande d'évolution : Dans le cadre de l'utilisation du composant datepicker avec les reactive forms, il faudrait pouvoir désactiver le rendu interne
+            des messages d'erreur. Nous souhaiterions avoir la main sur la transformation des erreurs en message en utilisant les &#64;Input message et severity
+            <br/><br/>
+            Nous avons nos propres mécanismes de transformation des erreurs de FormControl en message d'erreur.
+            Aussi, il serait génial que les erreurs (cf. DsfrDatepickerComponent.validate()) 'err_min_date' et 'err_max_date'
+            contiennent respectivement la valeur minDate et maxDate
+            afin de pouvoir gérer nous même le contenu des messages d'erreur internes en y incluant des paramètres.
+            <br/>
+            Exemple : Le date doit être postérieure au 01/05/2025.<br/><br/>
+            Mais il est important pour nous de garder un contrôle total du message car celui-ci pourrait être différent
+            selon le contexte. Pour le même type d'erreur mais dans un écran différent, on pourrait également vouloir le message : "La date doit être postérieure à la date du jour."
+        </p>
+
+        <dsfr-ext-datepicker [formControl]="control2"
+                             (dateChange)="onDateChangeCtrl2($event)"
+                             [severity]="control2.invalid ? 'error' : 'valid'"
+                             [message]="getErrorMessage(control2)"/>
+        <div>Control value : {{ control2.value ?? "null" }}</div>
+        <div>Control valid : {{ control2.valid }}</div>
+        <div>Liste des évènements :</div>
+        <code>
+            @for (evt of control2Evts; track $index) {
+                <div>{{ evt }}</div>
+            }
+        </code>
     </dsfr-accordion>
-    <dsfr-ext-datepicker [formControl]="control2"
-                         (dateChange)="onDateChangeCtrl2($event)"
-                         [severity]="control2.invalid ? 'error' : 'valid'"
-                         [message]="getErrorMessage(control2)"/>
-    <div>Control value : {{ control2.value ?? "null" }}</div>
-    <div>Control valid : {{ control2.valid }}</div>
-    <div>Liste des évènements :</div>
-    <code>
-        @for (evt of control2Evts; track $index) {
-            <div>{{ evt }}</div>
-        }
-    </code>
 </div>
